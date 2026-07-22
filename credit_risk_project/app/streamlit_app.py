@@ -3,6 +3,9 @@ import pandas as pd
 import joblib
 import shap
 import matplotlib.pyplot as plt
+import os
+
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def calculate_installment(loan_amnt, int_rate, term):
@@ -13,11 +16,13 @@ def calculate_installment(loan_amnt, int_rate, term):
     return round(installment, 2)
 
 
-# Load everything we saved earlier
-xgb_model_raw = joblib.load("xgb_model.pkl")            # for SHAP explanations
-xgb_model = joblib.load("xgb_model_calibrated.pkl")     # for the actual probability shown
-feature_names = joblib.load("feature_names.pkl")
-default_values = joblib.load("default_values.pkl")
+# Load everything we saved earlier - paths built relative to this script's
+# own location, so it works whether run locally or from Streamlit Cloud's
+# repo root
+xgb_model_raw = joblib.load(os.path.join(APP_DIR, "xgb_model.pkl"))            # for SHAP explanations
+xgb_model = joblib.load(os.path.join(APP_DIR, "xgb_model_calibrated.pkl"))     # for the actual probability shown
+feature_names = joblib.load(os.path.join(APP_DIR, "feature_names.pkl"))
+default_values = joblib.load(os.path.join(APP_DIR, "default_values.pkl"))
 
 st.set_page_config(page_title="Credit Risk Predictor", layout="centered")
 st.title("Loan Default Risk Predictor")
