@@ -1,5 +1,7 @@
 # Loan Default Risk Prediction
 
+**Live app:** https://credit-risk-loan-default-prediction-a7xaxjjgvka8ktggichfzk.streamlit.app/
+
 An end-to-end machine learning project predicting loan default risk from LendingClub data (2007–2018), built with explainability and probability calibration as first-class concerns — not just an afterthought.
 
 ## What makes this different from a typical ML portfolio project
@@ -43,6 +45,8 @@ credit_risk_project/
 ```
 
 ## Setup
+
+The live app above requires no setup. To run it locally or regenerate the model from scratch:
 
 ```bash
 # 1. Download accepted_2007_to_2018Q4.csv from Kaggle ("All Lending Club loan data" by Nathan George)
