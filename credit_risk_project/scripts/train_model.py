@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 
 df = pd.read_csv("../data/processed/model_ready_data.csv")
 
@@ -59,3 +60,41 @@ print(confusion_matrix(y_test, y_pred))
 
 print("\nFull Classification Report:")
 print(classification_report(y_test, y_pred))
+
+from xgboost import XGBClassifier
+
+# scale_pos_weight is XGBoost's version of class_weight="balanced" -
+# roughly the ratio of negative to positive class, telling the model
+# to weight the minority class (defaults) more heavily
+scale_pos_weight = (y_train == 0).sum() / (y_train == 1).sum()
+
+xgb_model = XGBClassifier(
+    scale_pos_weight=scale_pos_weight,
+    n_estimators=200,
+    max_depth=5,
+    learning_rate=0.1,
+    random_state=42,
+    eval_metric="logloss"
+)
+xgb_model.fit(X_train, y_train)  # Note: XGBoost doesn't need scaled features
+
+xgb_pred = xgb_model.predict(X_test)
+xgb_proba = xgb_model.predict_proba(X_test)[:, 1]
+
+print("\n--- XGBOOST PERFORMANCE ---")
+print("Accuracy: ", accuracy_score(y_test, xgb_pred))
+print("Precision:", precision_score(y_test, xgb_pred))
+print("Recall:   ", recall_score(y_test, xgb_pred))
+print("F1 Score: ", f1_score(y_test, xgb_pred))
+print("ROC-AUC:  ", roc_auc_score(y_test, xgb_proba))
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, xgb_pred))
+
+import joblib
+
+joblib.dump(xgb_model, "../app/xgb_model.pkl")
+joblib.dump(log_reg, "../app/log_reg_model.pkl")
+joblib.dump(scaler, "../app/scaler.pkl")
+joblib.dump(X_train.columns.tolist(), "../app/feature_names.pkl")
+
+print("\nModels saved to app/ folder.")
